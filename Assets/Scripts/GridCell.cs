@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GridCell
 {
@@ -46,9 +44,12 @@ public class GridCell
         new Edge(vertices[3], vertices[7]),
     };
 
+    public Vector3 Position { get; set; }
+    public Vector3 ScaledPosition { get => Position * Scale; }
+    public float Scale { get; set; }
     public float[] Values { get; } = new float[8];
 
-    public Mesh ConstructMesh(float surfaceLevel)
+    public int GetCubeIndex(float surfaceLevel)
     {
         int cubeIndex = 0;
         for (int i = 0; i < 8; i++)
@@ -57,37 +58,11 @@ public class GridCell
                 cubeIndex |= 1 << i;
         }
 
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
+        return cubeIndex;
+    }
 
-        int[] tri = Table.triangulation[cubeIndex];
-        int vertexCount = 0;
-
-        foreach (int edgeIndex in tri)
-        {
-            if (edgeIndex == -1)
-                continue;
-
-            Edge edge = edges[edgeIndex];
-            vertices.Add(edge.Midpoint);
-            triangles.Add(vertexCount++);
-        }
-
-        foreach (int edgeIndex in tri.Reverse())
-        {
-            if (edgeIndex == -1)
-                continue;
-
-            Edge edge = edges[edgeIndex];
-            vertices.Add(edge.Midpoint);
-            triangles.Add(vertexCount++);
-        }
-
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.RecalculateNormals();
-
-        return mesh;
+    public Vector3 GetValuePos(int index)
+    {
+        return (vertices[index] * Scale) + ScaledPosition;
     }
 }
