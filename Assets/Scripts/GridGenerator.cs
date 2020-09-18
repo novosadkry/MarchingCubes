@@ -8,6 +8,7 @@ public class GridGenerator : MonoBehaviour
 
     [Space]
     public int seed;
+    public float frequency;
 
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
@@ -25,13 +26,13 @@ public class GridGenerator : MonoBehaviour
         grids = new Dictionary<Vector3Int, Grid>();
         refreshQueue = new Queue<Vector3Int>();
 
-        for (int i = 0; i < size.x; i++)
+        for (int x = 0; x < size.x; x++)
         {
-            for (int j = 0; j < size.y; j++)
+            for (int y = 0; y < size.y; y++)
             {
-                for (int k = 0; k < size.z; k++)
+                for (int z = 0; z < size.z; z++)
                 {
-                    refreshQueue.Enqueue(new Vector3Int(i, j, k));
+                    refreshQueue.Enqueue(new Vector3Int(x, y, z));
                 }
             }
         }
@@ -43,13 +44,13 @@ public class GridGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            for (int i = 0; i < size.x; i++)
+            for (int x = 0; x < size.x; x++)
             {
-                for (int j = 0; j < size.y; j++)
+                for (int y = 0; y < size.y; y++)
                 {
-                    for (int k = 0; k < size.z; k++)
+                    for (int z = 0; z < size.z; z++)
                     {
-                        refreshQueue.Enqueue(new Vector3Int(i, j, k));
+                        refreshQueue.Enqueue(new Vector3Int(x, y, z));
                     }
                 }
             }
@@ -69,6 +70,7 @@ public class GridGenerator : MonoBehaviour
                     Grid grid = grids[gridPosition];
 
                     grid.Seed = seed;
+                    grid.Frequency = frequency;
                     grid.surfaceLevel = surfaceLevel;
                     grid.CellCount = cellCount;
                     grid.GridScale = gridScale;
@@ -98,6 +100,7 @@ public class GridGenerator : MonoBehaviour
         Grid grid = gridObject.GetComponent<Grid>();
 
         grid.Seed = seed;
+        grid.Frequency = frequency;
         grid.surfaceLevel = surfaceLevel;
         grid.GridScale = gridScale;
         grid.CellCount = cellCount;

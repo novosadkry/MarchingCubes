@@ -40,6 +40,15 @@ public class Grid : MonoBehaviour
         set => seed = value; 
     }
 
+    [SerializeField]
+    private float frequency;
+    public float Frequency
+    {
+        get => frequency;
+        set => frequency = value;
+    }
+
+
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
 
@@ -104,7 +113,12 @@ public class Grid : MonoBehaviour
                     {
                         Vector3 valuePos = (Vector3)GridPosition * GridScale + cell.GetValuePos(i);
 
-                        float noise = noiseGen.GetPerlin(valuePos.x, valuePos.y, valuePos.z);
+                        float noise = noiseGen.GetPerlin(
+                            valuePos.x / Frequency, 
+                            valuePos.y / Frequency, 
+                            valuePos.z / Frequency
+                        );
+
                         noise = (noise + 1) / 2;
                         
                         cell.Values[i] = noise;
