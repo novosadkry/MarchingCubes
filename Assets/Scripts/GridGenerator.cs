@@ -17,33 +17,21 @@ public class GridGenerator : MonoBehaviour
 
     public Vector3Int size;
 
-    private List<Grid> grids = new List<Grid>();
-    private Queue<Grid> refreshQueue = new Queue<Grid>();
+    private Dictionary<Vector3Int, Grid> grids;
+    private Queue<Vector3Int> refreshQueue;
 
-    void Start()
+    void Awake()
     {
+        grids = new Dictionary<Vector3Int, Grid>();
+        refreshQueue = new Queue<Vector3Int>();
+
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
             {
                 for (int k = 0; k < size.z; k++)
                 {
-                    GameObject o = Instantiate(chunkObject, transform);
-
-                    Grid grid = o.GetComponent<Grid>();
-
-                    grid.Seed = seed;
-                    grid.surfaceLevel = surfaceLevel;
-                    grid.GridScale = gridScale;
-                    grid.CellCount = cellCount;
-
-                    grid.GridPosition = new Vector3(i, j, k);
-                    grid.transform.position = grid.GridPosition * grid.GridScale;
-
-                    grid.GenerateGridValues();
-                    grid.ConstructMesh();
-
-                    grids.Add(grid);
+                    refreshQueue.Enqueue(new Vector3Int(i, j, k));
                 }
             }
         }
@@ -55,10 +43,15 @@ public class GridGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            foreach (var grid in grids)
+            for (int i = 0; i < size.x; i++)
             {
-                if (!refreshQueue.Contains(grid))
-                    refreshQueue.Enqueue(grid);
+                for (int j = 0; j < size.y; j++)
+                {
+                    for (int k = 0; k < size.z; k++)
+                    {
+                        refreshQueue.Enqueue(new Vector3Int(i, j, k));
+                    }
+                }
             }
         }
     }
@@ -69,20 +62,52 @@ public class GridGenerator : MonoBehaviour
         {
             if (refreshQueue.Count > 0)
             {
-                var grid = refreshQueue.Dequeue();
+                Vector3Int gridPosition = refreshQueue.Dequeue();
 
-                grid.Seed = seed;
-                grid.surfaceLevel = surfaceLevel;
-                grid.CellCount = cellCount;
-                grid.GridScale = gridScale;
+                if (grids.ContainsKey(gridPosition))
+                {
+                    Grid grid = grids[gridPosition];
 
-                grid.transform.position = grid.GridPosition * grid.GridScale;
+                    grid.Seed = seed;
+                    grid.surfaceLevel = surfaceLevel;
+                    grid.CellCount = cellCount;
+                    grid.GridScale = gridScale;
 
-                grid.GenerateGridValues();
-                grid.ConstructMesh();
+                    grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
+
+                    grid.GenerateGridValues();
+                    grid.ConstructMesh();
+                }
+
+                else
+                    AddChunk(gridPosition);
             }
 
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    public void AddChunk(int x, int y, int z)
+    {
+        AddChunk(new Vector3Int(x, y, z));
+    }
+
+    public void AddChunk(Vector3Int gridPosition)
+    {
+        GameObject gridObject = Instantiate(chunkObject, transform);
+        Grid grid = gridObject.GetComponent<Grid>();
+
+        grid.Seed = seed;
+        grid.surfaceLevel = surfaceLevel;
+        grid.GridScale = gridScale;
+        grid.CellCount = cellCount;
+
+        grid.GridPosition = gridPosition;
+        grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
+
+        grid.GenerateGridValues();
+        grid.ConstructMesh();
+
+        grids.Add(grid.GridPosition, grid);
     }
 }

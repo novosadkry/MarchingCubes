@@ -9,8 +9,8 @@ public class Grid : MonoBehaviour
     private MeshCollider meshCollider;
 
     [SerializeField]
-    private Vector3 gridPosition;
-    public Vector3 GridPosition 
+    private Vector3Int gridPosition;
+    public Vector3Int GridPosition 
     { 
         get => gridPosition; 
         set => gridPosition = value; 
@@ -102,7 +102,7 @@ public class Grid : MonoBehaviour
 
                     for (int i = 0; i < 8; i++)
                     {
-                        Vector3 valuePos = GridPosition * GridScale + cell.GetValuePos(i);
+                        Vector3 valuePos = (Vector3)GridPosition * GridScale + cell.GetValuePos(i);
 
                         float noise = noiseGen.GetPerlin(valuePos.x, valuePos.y, valuePos.z);
                         noise = (noise + 1) / 2;

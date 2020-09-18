@@ -430,9 +430,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkObject: {fileID: 6638718380138320360, guid: b11c4981eaecc2446aab25620b762746, type: 3}
+  seed: 25565
   surfaceLevel: 0.395
   gridScale: 8
-  cellCount: 8
+  cellCount: 4
   size: {x: 8, y: 8, z: 8}
 --- !u!4 &1726643221
 Transform:
