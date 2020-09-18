@@ -70,7 +70,7 @@ public class Grid : MonoBehaviour
         {
             ForeachCoordinate((pos) =>
             {
-                var cell = cells[pos.x, pos.y, pos.z];
+                var cell = GetCell(pos);
 
                 for (int i = 0; i < 12; i++)
                 {
@@ -114,7 +114,7 @@ public class Grid : MonoBehaviour
                 cell.Values[i] = noise;
             }
 
-            cells[pos.x, pos.y, pos.z] = cell;
+            SetCell(pos, cell);
         });
     }
 
@@ -127,7 +127,7 @@ public class Grid : MonoBehaviour
 
         ForeachCoordinate((pos) => 
         {
-            GridCell cell = cells[pos.x, pos.y, pos.z];
+            GridCell cell = GetCell(pos);
 
             int cubeIndex = cell.GetCubeIndex(surfaceLevel);
             int[] tri = Table.triangulation[cubeIndex];
@@ -172,6 +172,16 @@ public class Grid : MonoBehaviour
 
         meshFilter.mesh = mesh;
         meshCollider.sharedMesh = mesh;
+    }
+
+    public GridCell GetCell(Vector3Int cellPos)
+    {
+        return cells[cellPos.x, cellPos.y, cellPos.z];
+    }
+
+    private void SetCell(Vector3Int cellPos, GridCell cell)
+    {
+        cells[cellPos.x, cellPos.y, cellPos.z] = cell;
     }
 
     public void ForeachCoordinate(Action<Vector3Int> action)
