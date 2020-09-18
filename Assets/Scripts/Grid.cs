@@ -136,7 +136,9 @@ public class Grid : MonoBehaviour
                         float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
                         float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
 
-                        vertices.Add(edge.Midpoint + cell.Position * cell.Scale);
+                        Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+
+                        vertices.Add(p + cell.Position * cell.Scale);
                         triangles.Add(vertexCount++);
                     }
 
@@ -150,7 +152,9 @@ public class Grid : MonoBehaviour
                         float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
                         float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
 
-                        vertices.Add(edge.Midpoint + cell.Position * cell.Scale);
+                        Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+
+                        vertices.Add(p + cell.Position * cell.Scale);
                         triangles.Add(vertexCount++);
                     }
                 }

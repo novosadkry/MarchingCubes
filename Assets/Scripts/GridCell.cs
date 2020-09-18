@@ -15,6 +15,11 @@ public class GridCell
         public Vector3 B { get; }
 
         public Vector3 Midpoint { get => (A + B) / 2; }
+
+        public Vector3 InterpolateMidpoint(float v1, float v2, float surfaceLevel)
+        {
+            return A + ((surfaceLevel - v1) * (B - A) / (v2 - v1));
+        }
     }
 
     public static List<Vector3> vertices = new List<Vector3>
