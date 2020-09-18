@@ -431,6 +431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkObject: {fileID: 6638718380138320360, guid: b11c4981eaecc2446aab25620b762746, type: 3}
   seed: 25565
+  frequency: 0.55
   surfaceLevel: 0.395
   gridScale: 8
   cellCount: 4

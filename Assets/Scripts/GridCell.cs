@@ -50,7 +50,7 @@ public class GridCell
         new Edge(vertices[3], vertices[7]),
     };
 
-    public Vector3 Position { get; set; }
+    public Vector3Int Position { get; set; }
     public float Scale { get; set; }
     public float[] Values { get; } = new float[8];
 
@@ -68,6 +68,6 @@ public class GridCell
 
     public Vector3 GetValuePos(int index)
     {
-        return vertices[index] * Scale + Position * Scale;
+        return vertices[index] * Scale + (Vector3)Position * Scale;
     }
 }

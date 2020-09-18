@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,16 +27,7 @@ public class GridGenerator : MonoBehaviour
         grids = new Dictionary<Vector3Int, Grid>();
         refreshQueue = new Queue<Vector3Int>();
 
-        for (int x = 0; x < size.x; x++)
-        {
-            for (int y = 0; y < size.y; y++)
-            {
-                for (int z = 0; z < size.z; z++)
-                {
-                    refreshQueue.Enqueue(new Vector3Int(x, y, z));
-                }
-            }
-        }
+        ForeachCoordinate((pos) => refreshQueue.Enqueue(pos));
 
         StartCoroutine(RefreshGrids());
     }
@@ -43,18 +35,7 @@ public class GridGenerator : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
-        {
-            for (int x = 0; x < size.x; x++)
-            {
-                for (int y = 0; y < size.y; y++)
-                {
-                    for (int z = 0; z < size.z; z++)
-                    {
-                        refreshQueue.Enqueue(new Vector3Int(x, y, z));
-                    }
-                }
-            }
-        }
+            ForeachCoordinate((pos) => refreshQueue.Enqueue(pos));
     }
 
     IEnumerator RefreshGrids()
@@ -66,20 +47,7 @@ public class GridGenerator : MonoBehaviour
                 Vector3Int gridPosition = refreshQueue.Dequeue();
 
                 if (grids.ContainsKey(gridPosition))
-                {
-                    Grid grid = grids[gridPosition];
-
-                    grid.Seed = seed;
-                    grid.Frequency = frequency;
-                    grid.surfaceLevel = surfaceLevel;
-                    grid.CellCount = cellCount;
-                    grid.GridScale = gridScale;
-
-                    grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
-
-                    grid.GenerateGridValues();
-                    grid.ConstructMesh();
-                }
+                    UpdateChunk(gridPosition);
 
                 else
                     AddChunk(gridPosition);
@@ -112,5 +80,35 @@ public class GridGenerator : MonoBehaviour
         grid.ConstructMesh();
 
         grids.Add(grid.GridPosition, grid);
+    }
+
+    public void UpdateChunk(Vector3Int gridPosition)
+    {
+        Grid grid = grids[gridPosition];
+
+        grid.Seed = seed;
+        grid.Frequency = frequency;
+        grid.surfaceLevel = surfaceLevel;
+        grid.CellCount = cellCount;
+        grid.GridScale = gridScale;
+
+        grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
+
+        grid.GenerateGridValues();
+        grid.ConstructMesh();
+    }
+
+    public void ForeachCoordinate(Action<Vector3Int> action)
+    {
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                for (int z = 0; z < size.z; z++)
+                {
+                    action(new Vector3Int(x, y, z));
+                }
+            }
+        }
     }
 }

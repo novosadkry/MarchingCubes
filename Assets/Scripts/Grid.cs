@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -48,7 +49,6 @@ public class Grid : MonoBehaviour
         set => frequency = value;
     }
 
-
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
 
@@ -68,26 +68,20 @@ public class Grid : MonoBehaviour
     {
         if (showCubes)
         {
-            for (int x = 0; x < cells.GetUpperBound(0) + 1; x++)
+            ForeachCoordinate((pos) =>
             {
-                for (int y = 0; y < cells.GetUpperBound(1) + 1; y++)
+                var cell = cells[pos.x, pos.y, pos.z];
+
+                for (int i = 0; i < 12; i++)
                 {
-                    for (int z = 0; z < cells.GetUpperBound(2) + 1; z++)
-                    {
-                        var cell = cells[x, y, z];
+                    var edge = GridCell.edges[i];
 
-                        for (int i = 0; i < 12; i++)
-                        {
-                            var edge = GridCell.edges[i];
-
-                            Debug.DrawLine(
-                                edge.A * cell.Scale + cell.Position * cell.Scale + transform.position, 
-                                edge.B * cell.Scale + cell.Position * cell.Scale + transform.position
-                            );
-                        }
-                    }
+                    Debug.DrawLine(
+                        edge.A * cell.Scale + (Vector3)cell.Position * cell.Scale + transform.position,
+                        edge.B * cell.Scale + (Vector3)cell.Position * cell.Scale + transform.position
+                    );
                 }
-            }
+            });
         }
     }
 
@@ -97,37 +91,31 @@ public class Grid : MonoBehaviour
 
         cells = new GridCell[CellCount, CellCount, CellCount];
 
-        for (int x = 0; x < cells.GetUpperBound(0) + 1; x++)
+        ForeachCoordinate((pos) =>
         {
-            for (int y = 0; y < cells.GetUpperBound(1) + 1; y++)
+            GridCell cell = new GridCell()
             {
-                for (int z = 0; z < cells.GetUpperBound(2) + 1; z++)
-                {
-                    GridCell cell = new GridCell()
-                    {
-                        Scale = GridScale / CellCount,
-                        Position = new Vector3(x, y, z)
-                    };
+                Scale = GridScale / CellCount,
+                Position = pos
+            };
 
-                    for (int i = 0; i < 8; i++)
-                    {
-                        Vector3 valuePos = (Vector3)GridPosition * GridScale + cell.GetValuePos(i);
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 valuePos = (Vector3)GridPosition * GridScale + cell.GetValuePos(i);
 
-                        float noise = noiseGen.GetPerlin(
-                            valuePos.x / Frequency, 
-                            valuePos.y / Frequency, 
-                            valuePos.z / Frequency
-                        );
+                float noise = noiseGen.GetPerlin(
+                    valuePos.x / Frequency,
+                    valuePos.y / Frequency,
+                    valuePos.z / Frequency
+                );
 
-                        noise = (noise + 1) / 2;
-                        
-                        cell.Values[i] = noise;
-                    }
+                noise = (noise + 1) / 2;
 
-                    cells[x, y, z] = cell;
-                }
+                cell.Values[i] = noise;
             }
-        }
+
+            cells[pos.x, pos.y, pos.z] = cell;
+        });
     }
 
     public void ConstructMesh()
@@ -137,51 +125,45 @@ public class Grid : MonoBehaviour
 
         int vertexCount = 0;
 
-        for (int x = 0; x < cells.GetUpperBound(0) + 1; x++)
+        ForeachCoordinate((pos) => 
         {
-            for (int y = 0; y < cells.GetUpperBound(1) + 1; y++)
+            GridCell cell = cells[pos.x, pos.y, pos.z];
+
+            int cubeIndex = cell.GetCubeIndex(surfaceLevel);
+            int[] tri = Table.triangulation[cubeIndex];
+
+            foreach (int edgeIndex in tri)
             {
-                for (int z = 0; z < cells.GetUpperBound(2) + 1; z++)
-                {
-                    GridCell cell = cells[x, y, z];
+                if (edgeIndex == -1)
+                    continue;
 
-                    int cubeIndex = cell.GetCubeIndex(surfaceLevel);
-                    int[] tri = Table.triangulation[cubeIndex];
+                GridCell.Edge edge = GridCell.edges[edgeIndex];
 
-                    foreach (int edgeIndex in tri)
-                    {
-                        if (edgeIndex == -1)
-                            continue;
+                float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
+                float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
 
-                        GridCell.Edge edge = GridCell.edges[edgeIndex];
+                Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
 
-                        float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
-                        float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
-
-                        Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
-
-                        vertices.Add(p * cell.Scale + cell.Position * cell.Scale);
-                        triangles.Add(vertexCount++);
-                    }
-
-                    foreach (int edgeIndex in tri.Reverse())
-                    {
-                        if (edgeIndex == -1)
-                            continue;
-
-                        GridCell.Edge edge = GridCell.edges[edgeIndex];
-
-                        float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
-                        float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
-
-                        Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
-
-                        vertices.Add(p * cell.Scale + cell.Position * cell.Scale);
-                        triangles.Add(vertexCount++);
-                    }
-                }
+                vertices.Add(p * cell.Scale + (Vector3)cell.Position * cell.Scale);
+                triangles.Add(vertexCount++);
             }
-        }
+
+            foreach (int edgeIndex in tri.Reverse())
+            {
+                if (edgeIndex == -1)
+                    continue;
+
+                GridCell.Edge edge = GridCell.edges[edgeIndex];
+
+                float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
+                float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
+
+                Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+
+                vertices.Add(p * cell.Scale + (Vector3)cell.Position * cell.Scale);
+                triangles.Add(vertexCount++);
+            }
+        });
 
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
@@ -190,5 +172,19 @@ public class Grid : MonoBehaviour
 
         meshFilter.mesh = mesh;
         meshCollider.sharedMesh = mesh;
+    }
+
+    public void ForeachCoordinate(Action<Vector3Int> action)
+    {
+        for (int x = 0; x < cells.GetUpperBound(0) + 1; x++)
+        {
+            for (int y = 0; y < cells.GetUpperBound(1) + 1; y++)
+            {
+                for (int z = 0; z < cells.GetUpperBound(2) + 1; z++)
+                {
+                    action(new Vector3Int(x, y, z));
+                }
+            }
+        }
     }
 }
