@@ -32,6 +32,14 @@ public class Grid : MonoBehaviour
         set => cellCount = value;
     }
 
+    [SerializeField]
+    private int seed;
+    public int Seed 
+    { 
+        get => seed; 
+        set => seed = value; 
+    }
+
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
 
@@ -76,7 +84,7 @@ public class Grid : MonoBehaviour
 
     public void GenerateGridValues()
     {
-        FastNoise noiseGen = new FastNoise(257746);
+        FastNoise noiseGen = new FastNoise(Seed);
 
         cells = new GridCell[CellCount, CellCount, CellCount];
 

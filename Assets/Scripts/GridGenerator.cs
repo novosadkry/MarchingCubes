@@ -6,6 +6,9 @@ public class GridGenerator : MonoBehaviour
 {
     public GameObject chunkObject;
 
+    [Space]
+    public int seed;
+
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
 
@@ -29,6 +32,7 @@ public class GridGenerator : MonoBehaviour
 
                     Grid grid = o.GetComponent<Grid>();
 
+                    grid.Seed = seed;
                     grid.surfaceLevel = surfaceLevel;
                     grid.GridScale = gridScale;
                     grid.CellCount = cellCount;
@@ -67,6 +71,7 @@ public class GridGenerator : MonoBehaviour
             {
                 var grid = refreshQueue.Dequeue();
 
+                grid.Seed = seed;
                 grid.surfaceLevel = surfaceLevel;
                 grid.CellCount = cellCount;
                 grid.GridScale = gridScale;
