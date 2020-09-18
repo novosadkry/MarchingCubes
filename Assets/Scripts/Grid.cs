@@ -146,7 +146,7 @@ public class Grid : MonoBehaviour
 
                         Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
 
-                        vertices.Add(p + cell.Position * cell.Scale);
+                        vertices.Add(p * cell.Scale + cell.Position * cell.Scale);
                         triangles.Add(vertexCount++);
                     }
 
@@ -162,7 +162,7 @@ public class Grid : MonoBehaviour
 
                         Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
 
-                        vertices.Add(p + cell.Position * cell.Scale);
+                        vertices.Add(p * cell.Scale + cell.Position * cell.Scale);
                         triangles.Add(vertexCount++);
                     }
                 }
