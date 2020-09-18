@@ -58,8 +58,9 @@
     <Compile Include="Assets\Scripts\GridCell.cs" />
     <Compile Include="Assets\Scripts\Grid.cs" />
     <Compile Include="Assets\Scripts\Table.cs" />
-    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\Scripts\FastNoise.cs" />
+    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
+    <Compile Include="Assets\Scripts\GridGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

@@ -40,30 +40,15 @@ public class Grid : MonoBehaviour
 
     private GridCell[,,] cells;
 
-    void Start()
+    void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
         meshCollider = GetComponent<MeshCollider>();
-
-        GenerateGridValues();
-
-        Mesh mesh = ConstructMesh(surfaceLevel);
-        meshFilter.mesh = mesh;
-        meshCollider.sharedMesh = mesh;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            GenerateGridValues();
-
-            Mesh mesh = ConstructMesh(surfaceLevel);
-            meshFilter.mesh = mesh;
-            meshCollider.sharedMesh = mesh;
-        }
-
         if (showCubes)
         {
             for (int x = 0; x < cells.GetUpperBound(0) + 1; x++)
@@ -78,7 +63,10 @@ public class Grid : MonoBehaviour
                         {
                             var edge = GridCell.edges[i];
 
-                            Debug.DrawLine(edge.A * cell.Scale + cell.ScaledPosition + GridPosition, edge.B * cell.Scale + cell.ScaledPosition + GridPosition);
+                            Debug.DrawLine(
+                                edge.A * cell.Scale + cell.Position * cell.Scale + transform.position, 
+                                edge.B * cell.Scale + cell.Position * cell.Scale + transform.position
+                            );
                         }
                     }
                 }
@@ -106,7 +94,7 @@ public class Grid : MonoBehaviour
 
                     for (int i = 0; i < 8; i++)
                     {
-                        Vector3 valuePos = GridPosition + cell.GetValuePos(i);
+                        Vector3 valuePos = GridPosition * GridScale + cell.GetValuePos(i);
 
                         float noise = noiseGen.GetPerlin(valuePos.x, valuePos.y, valuePos.z);
                         noise = (noise + 1) / 2;
@@ -120,7 +108,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public Mesh ConstructMesh(float surfaceLevel)
+    public void ConstructMesh()
     {
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
@@ -144,7 +132,11 @@ public class Grid : MonoBehaviour
                             continue;
 
                         GridCell.Edge edge = GridCell.edges[edgeIndex];
-                        vertices.Add((edge.Midpoint * cell.Scale) + cell.ScaledPosition);
+
+                        float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
+                        float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
+
+                        vertices.Add(edge.Midpoint + cell.Position * cell.Scale);
                         triangles.Add(vertexCount++);
                     }
 
@@ -154,7 +146,11 @@ public class Grid : MonoBehaviour
                             continue;
 
                         GridCell.Edge edge = GridCell.edges[edgeIndex];
-                        vertices.Add((edge.Midpoint * cell.Scale) + cell.ScaledPosition);
+
+                        float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
+                        float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
+
+                        vertices.Add(edge.Midpoint + cell.Position * cell.Scale);
                         triangles.Add(vertexCount++);
                     }
                 }
@@ -166,6 +162,7 @@ public class Grid : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
 
-        return mesh;
+        meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
     }
 }

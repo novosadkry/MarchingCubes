@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class GridCell
 {
@@ -16,7 +17,7 @@ public class GridCell
         public Vector3 Midpoint { get => (A + B) / 2; }
     }
 
-    public static Vector3[] vertices =
+    public static List<Vector3> vertices = new List<Vector3>
     {
         new Vector3(0, 0, 0),
         new Vector3(1, 0, 0),
@@ -28,7 +29,7 @@ public class GridCell
         new Vector3(0, 1, 1),
     };
 
-    public static Edge[] edges =
+    public static List<Edge> edges = new List<Edge>
     {
         new Edge(vertices[0], vertices[1]),
         new Edge(vertices[1], vertices[2]),
@@ -45,7 +46,6 @@ public class GridCell
     };
 
     public Vector3 Position { get; set; }
-    public Vector3 ScaledPosition { get => Position * Scale; }
     public float Scale { get; set; }
     public float[] Values { get; } = new float[8];
 
@@ -63,6 +63,6 @@ public class GridCell
 
     public Vector3 GetValuePos(int index)
     {
-        return (vertices[index] * Scale) + ScaledPosition;
+        return vertices[index] * Scale + Position * Scale;
     }
 }
