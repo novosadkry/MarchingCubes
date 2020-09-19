@@ -42,6 +42,14 @@ public class Grid : MonoBehaviour
     }
 
     [SerializeField]
+    private float maxHeight;
+    public float MaxHeight
+    {
+        get => maxHeight;
+        set => maxHeight = value;
+    }
+
+    [SerializeField]
     private float frequency;
     public float Frequency
     {
@@ -102,16 +110,18 @@ public class Grid : MonoBehaviour
             for (int i = 0; i < 8; i++)
             {
                 Vector3 valuePos = (Vector3)GridPosition * GridScale + cell.GetValuePos(i);
-
+                
                 float noise = noiseGen.GetPerlin(
                     valuePos.x / Frequency,
-                    valuePos.y / Frequency,
                     valuePos.z / Frequency
                 );
 
                 noise = (noise + 1) / 2;
+                
+                float height = noise * MaxHeight - valuePos.y;
+                float value = 1 - height / MaxHeight;
 
-                cell.Values[i] = noise;
+                cell.Values[i] = value;
             }
 
             SetCell(pos, cell);

@@ -9,6 +9,7 @@ public class GridGenerator : MonoBehaviour
 
     [Space]
     public int seed;
+    public float maxHeight;
     public float frequency;
 
     [Range(0.0f, 1.0f)]
@@ -82,7 +83,6 @@ public class GridGenerator : MonoBehaviour
 
                 if (Grids.ContainsKey(gridPosition))
                     UpdateChunk(gridPosition);
-
                 else
                     AddChunk(gridPosition);
             }
@@ -102,6 +102,7 @@ public class GridGenerator : MonoBehaviour
         Grid grid = gridObject.GetComponent<Grid>();
 
         grid.Seed = seed;
+        grid.MaxHeight = maxHeight;
         grid.Frequency = frequency;
         grid.surfaceLevel = surfaceLevel;
         grid.GridScale = gridScale;
@@ -121,6 +122,7 @@ public class GridGenerator : MonoBehaviour
         Grid grid = Grids[gridPos];
 
         grid.Seed = seed;
+        grid.MaxHeight = maxHeight;
         grid.Frequency = frequency;
         grid.surfaceLevel = surfaceLevel;
         grid.CellCount = cellCount;
