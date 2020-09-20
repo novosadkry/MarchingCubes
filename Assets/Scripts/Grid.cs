@@ -76,7 +76,7 @@ public class Grid : MonoBehaviour
     {
         if (showCubes)
         {
-            ForeachCoordinate((pos) =>
+            ForeachCoordinate(pos =>
             {
                 var cell = GetCell(pos);
 
@@ -99,9 +99,9 @@ public class Grid : MonoBehaviour
 
         cells = new GridCell[CellCount, CellCount, CellCount];
 
-        ForeachCoordinate((pos) =>
+        ForeachCoordinate(pos =>
         {
-            GridCell cell = new GridCell()
+            GridCell cell = new GridCell
             {
                 Scale = GridScale / CellCount,
                 Position = pos
@@ -135,7 +135,7 @@ public class Grid : MonoBehaviour
 
         int vertexCount = 0;
 
-        ForeachCoordinate((pos) => 
+        ForeachCoordinate(pos => 
         {
             GridCell cell = GetCell(pos);
 
@@ -184,6 +184,16 @@ public class Grid : MonoBehaviour
         meshCollider.sharedMesh = mesh;
     }
 
+    public bool HasPosition(Vector3 pos)
+    {
+        Vector3 p1 = (Vector3)GridPosition * GridScale;
+        Vector3 p2 = p1 + new Vector3(GridScale, GridScale, GridScale);
+        
+        return p1.x <= pos.x && pos.x <= p2.x
+            && p1.y <= pos.y && pos.y <= p2.y
+            && p1.z <= pos.z && pos.z <= p2.z;
+    }
+    
     public GridCell GetCell(Vector3Int cellPos)
     {
         return cells[cellPos.x, cellPos.y, cellPos.z];
@@ -200,7 +210,7 @@ public class Grid : MonoBehaviour
         {
             bool isEmpty = true;
 
-            ForeachCoordinate((pos) =>
+            ForeachCoordinate(pos =>
             {
                 GridCell cell = GetCell(pos);
 

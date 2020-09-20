@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    public GameObject chunkObject;
-
     [Space]
     public int seed;
     public float maxHeight;
@@ -23,15 +21,15 @@ public class GridGenerator : MonoBehaviour
     public Dictionary<Vector3Int, Grid> Grids { get; private set; }
     private Queue<Vector3Int> refreshQueue;
 
-    private GameObjectPool chunkPool;
+    private GameObjectPool gridObjectPool;
 
     void Awake()
     {
         Grids = new Dictionary<Vector3Int, Grid>();
         refreshQueue = new Queue<Vector3Int>();
-        chunkPool = GetComponent<GameObjectPool>();
+        gridObjectPool = GetComponent<GameObjectPool>();
 
-        ForeachCoordinate((pos) => refreshQueue.Enqueue(pos));
+        ForeachCoordinate(pos => refreshQueue.Enqueue(pos));
 
         StartCoroutine(RefreshGrids());
     }
@@ -39,7 +37,7 @@ public class GridGenerator : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
-            ForeachCoordinate((pos) => refreshQueue.Enqueue(pos));
+            ForeachCoordinate(pos => refreshQueue.Enqueue(pos));
     }
 
     IEnumerator RefreshGrids()
@@ -51,34 +49,34 @@ public class GridGenerator : MonoBehaviour
                 Vector3Int gridPosition = refreshQueue.Dequeue();
 
                 if (Grids.ContainsKey(gridPosition))
-                    UpdateChunk(gridPosition);
+                    UpdateGrid(gridPosition);
                 else
-                    AddChunk(gridPosition);
+                    AddGrid(gridPosition);
             }
 
             yield return new WaitForEndOfFrame();
         }
     }
 
-    public void RefreshChunk(int x, int y, int z)
+    public void RefreshGrid(int x, int y, int z)
     {
-        RefreshChunk(new Vector3Int(x, y, z));
+        RefreshGrid(new Vector3Int(x, y, z));
     }
 
-    public void RefreshChunk(Vector3Int gridPos)
+    public void RefreshGrid(Vector3Int gridPos)
     {
         if (!refreshQueue.Contains(gridPos))
             refreshQueue.Enqueue(gridPos);
     }
 
-    public void AddChunk(int x, int y, int z)
+    public void AddGrid(int x, int y, int z)
     {
-        AddChunk(new Vector3Int(x, y, z));
+        AddGrid(new Vector3Int(x, y, z));
     }
 
-    public void AddChunk(Vector3Int gridPos)
+    public void AddGrid(Vector3Int gridPos)
     {
-        GameObject gridObject = chunkPool.GetPooled();
+        GameObject gridObject = gridObjectPool.GetPooled();
         gridObject.SetActive(true);
         
         Grid grid = gridObject.GetComponent<Grid>();
@@ -99,7 +97,7 @@ public class GridGenerator : MonoBehaviour
         Grids.Add(grid.GridPosition, grid);
     }
 
-    public void UpdateChunk(Vector3Int gridPos)
+    public void UpdateGrid(Vector3Int gridPos)
     {
         Grid grid = Grids[gridPos];
 
@@ -114,6 +112,24 @@ public class GridGenerator : MonoBehaviour
 
         //grid.GenerateGridValues();
         grid.ConstructMesh();
+    }
+
+    public Grid GetGridFromWorldPosition(Vector3 pos)
+    {
+        Grid grid = null;
+
+        ForeachCoordinate(gridPos =>
+        {
+            Grid g = Grids[gridPos];
+
+            if (g.HasPosition(pos))
+            {
+                grid = g;
+                return;
+            }
+        });
+
+        return grid;
     }
 
     public void ForeachCoordinate(Action<Vector3Int> action)

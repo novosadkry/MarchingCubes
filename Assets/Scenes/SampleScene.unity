@@ -353,9 +353,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridGenerator: {fileID: 1726643220}
-  maxDistance: 30
+  maxDistance: 50
   toolPrefab: {fileID: 1028430629344763022, guid: 8f5ba1c368756364e8d8021380383de0, type: 3}
-  toolStrength: 0.5
+  toolStrength: 0.2
   toolTick: 0.1
 --- !u!850595691 &1529289254
 LightingSettings:
