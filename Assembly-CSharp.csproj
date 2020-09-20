@@ -60,8 +60,9 @@
     <Compile Include="Assets\Scripts\GridGenerator.cs" />
     <Compile Include="Assets\Scripts\Table.cs" />
     <Compile Include="Assets\Scripts\FastNoise.cs" />
-    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\Scripts\GameObjectPool.cs" />
+    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
+    <Compile Include="Assets\Scripts\TerraformTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

@@ -14,15 +14,15 @@ public class GridCell
         public Vector3 A { get; }
         public Vector3 B { get; }
 
-        public Vector3 Midpoint { get => (A + B) / 2; }
+        public Vector3 Midpoint => (A + B) / 2;
 
         public Vector3 InterpolateMidpoint(float v1, float v2, float surfaceLevel)
         {
-            return A + ((surfaceLevel - v1) * (B - A) / (v2 - v1));
+            return A + (surfaceLevel - v1) * (B - A) / (v2 - v1);
         }
     }
 
-    public static List<Vector3> vertices = new List<Vector3>
+    public static readonly List<Vector3> Vertices = new List<Vector3>
     {
         new Vector3(0, 0, 0),
         new Vector3(1, 0, 0),
@@ -34,25 +34,40 @@ public class GridCell
         new Vector3(0, 1, 1),
     };
 
-    public static List<Edge> edges = new List<Edge>
+    public static readonly List<Edge> Edges = new List<Edge>
     {
-        new Edge(vertices[0], vertices[1]),
-        new Edge(vertices[1], vertices[2]),
-        new Edge(vertices[2], vertices[3]),
-        new Edge(vertices[3], vertices[0]),
-        new Edge(vertices[4], vertices[5]),
-        new Edge(vertices[6], vertices[5]),
-        new Edge(vertices[7], vertices[6]),
-        new Edge(vertices[7], vertices[4]),
-        new Edge(vertices[0], vertices[4]),
-        new Edge(vertices[1], vertices[5]),
-        new Edge(vertices[6], vertices[2]),
-        new Edge(vertices[3], vertices[7]),
+        new Edge(Vertices[0], Vertices[1]),
+        new Edge(Vertices[1], Vertices[2]),
+        new Edge(Vertices[2], Vertices[3]),
+        new Edge(Vertices[3], Vertices[0]),
+        new Edge(Vertices[4], Vertices[5]),
+        new Edge(Vertices[6], Vertices[5]),
+        new Edge(Vertices[7], Vertices[6]),
+        new Edge(Vertices[7], Vertices[4]),
+        new Edge(Vertices[0], Vertices[4]),
+        new Edge(Vertices[1], Vertices[5]),
+        new Edge(Vertices[6], Vertices[2]),
+        new Edge(Vertices[3], Vertices[7]),
     };
 
     public Vector3Int Position { get; set; }
     public float Scale { get; set; }
     public float[] Values { get; } = new float[8];
+
+    public bool IsEmpty 
+    { 
+        get
+        {
+            bool isEmpty = true;
+            for (int i = 0; i < 8; i++)
+            {
+                if (Values[i] < 1.0f)
+                    isEmpty = false;
+            }
+
+            return isEmpty;
+        }
+    }
 
     public int GetCubeIndex(float surfaceLevel)
     {
@@ -68,6 +83,6 @@ public class GridCell
 
     public Vector3 GetValuePos(int index)
     {
-        return vertices[index] * Scale + (Vector3)Position * Scale;
+        return Vertices[index] * Scale + (Vector3)Position * Scale;
     }
 }

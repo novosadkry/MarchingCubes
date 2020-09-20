@@ -20,13 +20,16 @@ public class GridGenerator : MonoBehaviour
 
     public Vector3Int size;
 
-    public Dictionary<Vector3Int, Grid> Grids { get; set; }
+    public Dictionary<Vector3Int, Grid> Grids { get; private set; }
     private Queue<Vector3Int> refreshQueue;
+
+    private GameObjectPool chunkPool;
 
     void Awake()
     {
         Grids = new Dictionary<Vector3Int, Grid>();
         refreshQueue = new Queue<Vector3Int>();
+        chunkPool = GetComponent<GameObjectPool>();
 
         ForeachCoordinate((pos) => refreshQueue.Enqueue(pos));
 
@@ -37,40 +40,6 @@ public class GridGenerator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
             ForeachCoordinate((pos) => refreshQueue.Enqueue(pos));
-
-        if (Input.GetMouseButton(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hitInfo))
-            {
-                Debug.DrawLine(Camera.main.transform.position, hitInfo.point);
-
-                ForeachCoordinate((gridPos) =>
-                {
-                    Grid grid = Grids[gridPos];
-
-                    if (((hitInfo.point / grid.GridScale) - grid.GridPosition).sqrMagnitude < 3)
-                    {
-                        grid.ForeachCoordinate((cellPos) =>
-                        {
-                            GridCell cell = grid.GetCell(cellPos);
-
-                            for (int i = 0; i < 8; i++)
-                            {
-                                Vector3 valuePos = (Vector3)grid.GridPosition * grid.GridScale + cell.GetValuePos(i);
-
-                                if ((hitInfo.point - valuePos).sqrMagnitude < 2)
-                                    cell.Values[i] += 0.005f;
-                            }
-                        });
-
-                        if (!refreshQueue.Contains(gridPos))
-                            refreshQueue.Enqueue(gridPos);
-                    }
-                });
-            }
-        }
     }
 
     IEnumerator RefreshGrids()
@@ -91,6 +60,17 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
+    public void RefreshChunk(int x, int y, int z)
+    {
+        RefreshChunk(new Vector3Int(x, y, z));
+    }
+
+    public void RefreshChunk(Vector3Int gridPos)
+    {
+        if (!refreshQueue.Contains(gridPos))
+            refreshQueue.Enqueue(gridPos);
+    }
+
     public void AddChunk(int x, int y, int z)
     {
         AddChunk(new Vector3Int(x, y, z));
@@ -98,7 +78,9 @@ public class GridGenerator : MonoBehaviour
 
     public void AddChunk(Vector3Int gridPos)
     {
-        GameObject gridObject = Instantiate(chunkObject, transform);
+        GameObject gridObject = chunkPool.GetPooled();
+        gridObject.SetActive(true);
+        
         Grid grid = gridObject.GetComponent<Grid>();
 
         grid.Seed = seed;

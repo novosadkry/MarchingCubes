@@ -82,7 +82,7 @@ public class Grid : MonoBehaviour
 
                 for (int i = 0; i < 12; i++)
                 {
-                    var edge = GridCell.edges[i];
+                    var edge = GridCell.Edges[i];
 
                     Debug.DrawLine(
                         edge.A * cell.Scale + (Vector3)cell.Position * cell.Scale + transform.position,
@@ -147,10 +147,10 @@ public class Grid : MonoBehaviour
                 if (edgeIndex == -1)
                     continue;
 
-                GridCell.Edge edge = GridCell.edges[edgeIndex];
+                GridCell.Edge edge = GridCell.Edges[edgeIndex];
 
-                float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
-                float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
+                float valueA = cell.Values[GridCell.Vertices.IndexOf(edge.A)];
+                float valueB = cell.Values[GridCell.Vertices.IndexOf(edge.B)];
 
                 Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
 
@@ -163,10 +163,10 @@ public class Grid : MonoBehaviour
                 if (edgeIndex == -1)
                     continue;
 
-                GridCell.Edge edge = GridCell.edges[edgeIndex];
+                GridCell.Edge edge = GridCell.Edges[edgeIndex];
 
-                float valueA = cell.Values[GridCell.vertices.IndexOf(edge.A)];
-                float valueB = cell.Values[GridCell.vertices.IndexOf(edge.B)];
+                float valueA = cell.Values[GridCell.Vertices.IndexOf(edge.A)];
+                float valueB = cell.Values[GridCell.Vertices.IndexOf(edge.B)];
 
                 Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
 
@@ -192,6 +192,24 @@ public class Grid : MonoBehaviour
     private void SetCell(Vector3Int cellPos, GridCell cell)
     {
         cells[cellPos.x, cellPos.y, cellPos.z] = cell;
+    }
+
+    public bool IsEmpty
+    {
+        get
+        {
+            bool isEmpty = true;
+
+            ForeachCoordinate((pos) =>
+            {
+                GridCell cell = GetCell(pos);
+
+                if (!cell.IsEmpty)
+                    isEmpty = false;
+            });
+
+            return isEmpty;
+        }
     }
 
     public void ForeachCoordinate(Action<Vector3Int> action)
