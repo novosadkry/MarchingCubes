@@ -9,6 +9,7 @@ public class Grid : MonoBehaviour
     private MeshRenderer meshRenderer;
     private MeshCollider meshCollider;
 
+    [Space]
     [SerializeField]
     private Vector3Int gridPosition;
     public Vector3Int GridPosition 
@@ -24,6 +25,15 @@ public class Grid : MonoBehaviour
         get => gridScale;
         set => gridScale = value;
     }
+    
+    [Space]
+    [SerializeField]
+    private int seed;
+    public int Seed 
+    { 
+        get => seed; 
+        set => seed = value; 
+    }
 
     [SerializeField]
     private int cellCount;
@@ -33,14 +43,7 @@ public class Grid : MonoBehaviour
         set => cellCount = value;
     }
 
-    [SerializeField]
-    private int seed;
-    public int Seed 
-    { 
-        get => seed; 
-        set => seed = value; 
-    }
-
+    [Space]
     [SerializeField]
     private float maxHeight;
     public float MaxHeight
@@ -59,6 +62,9 @@ public class Grid : MonoBehaviour
 
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
+
+    [Space]
+    public Gradient colorGradient;
 
     [Header("Debug")]
     public bool showCubes;
@@ -132,6 +138,7 @@ public class Grid : MonoBehaviour
     {
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
+        List<Color> colors = new List<Color>();
 
         int vertexCount = 0;
 
@@ -153,9 +160,11 @@ public class Grid : MonoBehaviour
                 float valueB = cell.Values[GridCell.Vertices.IndexOf(edge.B)];
 
                 Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+                Vector3 pPos = p * cell.Scale + (Vector3)cell.Position * cell.Scale;
 
-                vertices.Add(p * cell.Scale + (Vector3)cell.Position * cell.Scale);
+                vertices.Add(pPos);
                 triangles.Add(vertexCount++);
+                colors.Add(colorGradient.Evaluate((pPos + GridPosition).y / MaxHeight));
             }
 
             foreach (int edgeIndex in tri.Reverse())
@@ -169,15 +178,18 @@ public class Grid : MonoBehaviour
                 float valueB = cell.Values[GridCell.Vertices.IndexOf(edge.B)];
 
                 Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+                Vector3 pPos = p * cell.Scale + (Vector3)cell.Position * cell.Scale;
 
-                vertices.Add(p * cell.Scale + (Vector3)cell.Position * cell.Scale);
+                vertices.Add(pPos);
                 triangles.Add(vertexCount++);
+                colors.Add(colorGradient.Evaluate((pPos + (Vector3)GridPosition * GridScale).y / MaxHeight));
             }
         });
 
         Mesh mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
+        mesh.colors = colors.ToArray();
         mesh.RecalculateNormals();
 
         meshFilter.mesh = mesh;

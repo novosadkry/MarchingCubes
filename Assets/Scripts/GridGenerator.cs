@@ -7,16 +7,21 @@ public class GridGenerator : MonoBehaviour
 {
     [Space]
     public int seed;
+    
+    [Space]
     public float maxHeight;
     public float frequency;
 
     [Range(0.0f, 1.0f)]
     public float surfaceLevel;
 
+    [Space]
     public float gridScale;
     public int cellCount;
-
     public Vector3Int size;
+
+    [Space]
+    public Gradient colorGradient;
 
     public Dictionary<Vector3Int, Grid> Grids { get; private set; }
     private Queue<Vector3Int> refreshQueue;
@@ -87,6 +92,7 @@ public class GridGenerator : MonoBehaviour
         grid.surfaceLevel = surfaceLevel;
         grid.GridScale = gridScale;
         grid.CellCount = cellCount;
+        grid.colorGradient = colorGradient;
 
         grid.GridPosition = gridPos;
         grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
@@ -107,6 +113,7 @@ public class GridGenerator : MonoBehaviour
         grid.surfaceLevel = surfaceLevel;
         grid.CellCount = cellCount;
         grid.GridScale = gridScale;
+        grid.colorGradient = colorGradient;
 
         grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
 
