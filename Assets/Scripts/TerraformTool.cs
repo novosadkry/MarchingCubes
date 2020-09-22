@@ -13,6 +13,7 @@ public class TerraformTool : MonoBehaviour
     public GridGenerator gridGenerator;
 
     public float maxDistance;
+    public float minDistance;
     private Camera cam;
 
     public GameObject toolPrefab;
@@ -55,6 +56,9 @@ public class TerraformTool : MonoBehaviour
             ? hitInfo.point
             : ray.direction * maxDistance + ray.origin;
 
+        bool isNear = Vector3.Distance(toolPos, ray.origin) - toolScale / 2 < minDistance;
+        
+        toolPrefabInstance.SetActive(!isNear);
         toolPrefabInstance.transform.position = toolPos;
 
         if (Input.GetMouseButton(0))

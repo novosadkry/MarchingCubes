@@ -355,6 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridGenerator: {fileID: 1726643220}
   maxDistance: 50
+  minDistance: 5
   toolPrefab: {fileID: 1028430629344763022, guid: 8f5ba1c368756364e8d8021380383de0, type: 3}
   toolStrength: 0.2
   toolTick: 0.1
