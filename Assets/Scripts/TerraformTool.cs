@@ -108,17 +108,17 @@ public class TerraformTool : MonoBehaviour
 
                     if (cellPos.x == 0)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(-1, 0, 0));
-                    else if (cellPos.x == grid.CellCount - 1)
+                    else if (cellPos.x == grid.Data.CellCount - 1)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(1, 0, 0));
                     
                     if (cellPos.y == 0)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(0, -1, 0));
-                    else if (cellPos.y == grid.CellCount - 1)
+                    else if (cellPos.y == grid.Data.CellCount - 1)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(0, 1, 0));
                     
                     if (cellPos.z == 0)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(0, 0, -1));
-                    else if (cellPos.z == grid.CellCount - 1)
+                    else if (cellPos.z == grid.Data.CellCount - 1)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(0, 0, 1));
                 }
             }

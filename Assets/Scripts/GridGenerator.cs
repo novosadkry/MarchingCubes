@@ -86,15 +86,20 @@ public class GridGenerator : MonoBehaviour
         
         Grid grid = gridObject.GetComponent<Grid>();
 
-        grid.Seed = seed;
-        grid.MaxHeight = maxHeight;
-        grid.Frequency = frequency;
-        grid.surfaceLevel = surfaceLevel;
-        grid.GridScale = gridScale;
-        grid.CellCount = cellCount;
-        grid.colorGradient = colorGradient;
+        Grid.GridData data = new Grid.GridData
+        {
+            Seed = seed,
+            MaxHeight = maxHeight,
+            Frequency = frequency,
+            SurfaceLevel = surfaceLevel,
+            CellCount = cellCount,
+            ColorGradient = colorGradient
+        };
 
         grid.GridPosition = gridPos;
+        grid.GridScale = gridScale;
+        grid.Data = data;
+        
         grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
 
         grid.GenerateGridValues();
@@ -107,14 +112,20 @@ public class GridGenerator : MonoBehaviour
     {
         Grid grid = Grids[gridPos];
 
-        grid.Seed = seed;
-        grid.MaxHeight = maxHeight;
-        grid.Frequency = frequency;
-        grid.surfaceLevel = surfaceLevel;
-        grid.CellCount = cellCount;
-        grid.GridScale = gridScale;
-        grid.colorGradient = colorGradient;
+        Grid.GridData data = new Grid.GridData
+        {
+            Seed = seed,
+            MaxHeight = maxHeight,
+            Frequency = frequency,
+            SurfaceLevel = surfaceLevel,
+            CellCount = cellCount,
+            ColorGradient = colorGradient
+        };
 
+        grid.GridPosition = gridPos;
+        grid.GridScale = gridScale;
+        grid.Data = data;
+        
         grid.transform.position = (Vector3)grid.GridPosition * grid.GridScale;
 
         //grid.GenerateGridValues();

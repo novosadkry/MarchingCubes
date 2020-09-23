@@ -5,66 +5,41 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    [Serializable]
+    public class GridData
+    {
+        [field: SerializeField]
+        public int Seed { get; set; }
+        
+        [field: SerializeField]
+        public float MaxHeight { get; set; }
+        
+        [field: SerializeField]
+        public float Frequency { get; set; }
+        
+        [field: SerializeField]
+        public float SurfaceLevel { get; set; }
+        
+        [field: SerializeField]
+        public int CellCount { get; set; }
+        
+        [field: SerializeField]
+        public Gradient ColorGradient { get; set; }
+    }
+    
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
     private MeshCollider meshCollider;
-
-    [Space]
-    [SerializeField]
-    private Vector3Int gridPosition;
-    public Vector3Int GridPosition 
-    { 
-        get => gridPosition; 
-        set => gridPosition = value; 
-    }
-
-    [SerializeField]
-    private float gridScale;
-    public float GridScale
-    {
-        get => gridScale;
-        set => gridScale = value;
-    }
     
-    [Space]
-    [SerializeField]
-    private int seed;
-    public int Seed 
-    { 
-        get => seed; 
-        set => seed = value; 
-    }
-
-    [SerializeField]
-    private int cellCount;
-    public int CellCount
-    {
-        get => cellCount;
-        set => cellCount = value;
-    }
-
-    [Space]
-    [SerializeField]
-    private float maxHeight;
-    public float MaxHeight
-    {
-        get => maxHeight;
-        set => maxHeight = value;
-    }
-
-    [SerializeField]
-    private float frequency;
-    public float Frequency
-    {
-        get => frequency;
-        set => frequency = value;
-    }
-
-    [Range(0.0f, 1.0f)]
-    public float surfaceLevel;
-
-    [Space]
-    public Gradient colorGradient;
+    [field: SerializeField]
+    public Vector3Int GridPosition { get; set; }
+        
+    [field: SerializeField]
+    public float GridScale { get; set; }
+    
+    [field: Space]
+    [field: SerializeField]
+    public GridData Data { get; set; }
 
     [Header("Debug")]
     public bool showCubes;
@@ -101,15 +76,15 @@ public class Grid : MonoBehaviour
 
     public void GenerateGridValues()
     {
-        FastNoise noiseGen = new FastNoise(Seed);
+        FastNoise noiseGen = new FastNoise(Data.Seed);
 
-        cells = new GridCell[CellCount, CellCount, CellCount];
+        cells = new GridCell[Data.CellCount, Data.CellCount, Data.CellCount];
 
         ForeachCoordinate(pos =>
         {
             GridCell cell = new GridCell
             {
-                Scale = GridScale / CellCount,
+                Scale = GridScale / Data.CellCount,
                 Position = pos
             };
 
@@ -118,14 +93,14 @@ public class Grid : MonoBehaviour
                 Vector3 valuePos = (Vector3)GridPosition * GridScale + cell.GetValuePos(i);
                 
                 float noise = noiseGen.GetPerlin(
-                    valuePos.x / Frequency,
-                    valuePos.z / Frequency
+                    valuePos.x / Data.Frequency,
+                    valuePos.z / Data.Frequency
                 );
 
                 noise = (noise + 1) / 2;
                 
-                float height = noise * MaxHeight - valuePos.y;
-                float value = 1 - height / MaxHeight;
+                float height = noise * Data.MaxHeight - valuePos.y;
+                float value = 1 - height / Data.MaxHeight;
 
                 cell.Values[i] = value;
             }
@@ -146,7 +121,7 @@ public class Grid : MonoBehaviour
         {
             GridCell cell = GetCell(pos);
 
-            int cubeIndex = cell.GetCubeIndex(surfaceLevel);
+            int cubeIndex = cell.GetCubeIndex(Data.SurfaceLevel);
             int[] tri = Table.triangulation[cubeIndex];
 
             foreach (int edgeIndex in tri)
@@ -159,12 +134,12 @@ public class Grid : MonoBehaviour
                 float valueA = cell.Values[GridCell.Vertices.IndexOf(edge.A)];
                 float valueB = cell.Values[GridCell.Vertices.IndexOf(edge.B)];
 
-                Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+                Vector3 p = edge.InterpolateMidpoint(valueA, valueB, Data.SurfaceLevel);
                 Vector3 pPos = p * cell.Scale + (Vector3)cell.Position * cell.Scale;
 
                 vertices.Add(pPos);
                 triangles.Add(vertexCount++);
-                colors.Add(colorGradient.Evaluate((pPos + GridPosition).y / MaxHeight));
+                colors.Add(Data.ColorGradient.Evaluate((pPos + GridPosition).y / Data.MaxHeight));
             }
 
             foreach (int edgeIndex in tri.Reverse())
@@ -177,12 +152,12 @@ public class Grid : MonoBehaviour
                 float valueA = cell.Values[GridCell.Vertices.IndexOf(edge.A)];
                 float valueB = cell.Values[GridCell.Vertices.IndexOf(edge.B)];
 
-                Vector3 p = edge.InterpolateMidpoint(valueA, valueB, surfaceLevel);
+                Vector3 p = edge.InterpolateMidpoint(valueA, valueB, Data.SurfaceLevel);
                 Vector3 pPos = p * cell.Scale + (Vector3)cell.Position * cell.Scale;
 
                 vertices.Add(pPos);
                 triangles.Add(vertexCount++);
-                colors.Add(colorGradient.Evaluate((pPos + (Vector3)GridPosition * GridScale).y / MaxHeight));
+                colors.Add(Data.ColorGradient.Evaluate((pPos + (Vector3)GridPosition * GridScale).y / Data.MaxHeight));
             }
         });
 
