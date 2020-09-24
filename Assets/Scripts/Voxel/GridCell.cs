@@ -1,10 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Voxel
 {
     public class GridCell
     {
+        public struct Triangle
+        {
+            public Triangle(Vector3 a, Vector3 b, Vector3 c)
+            {
+                A = a;
+                B = b;
+                C = c;
+            }
+            
+            public Vector3 A { get; set; }
+            public Vector3 B { get; set; }
+            public Vector3 C { get; set; }
+
+            public Vector3 this[int index]
+            {
+                get
+                {
+                    switch (index)
+                    {
+                        case 0: return A;
+                        case 1: return B;
+                        case 2: return C;
+                        default: throw new IndexOutOfRangeException();
+                    }
+                }
+
+                set
+                {
+                    switch (index)
+                    {
+                        case 0: A = value; break;
+                        case 1: B = value; break;
+                        case 2: C = value; break;
+                        default: throw new IndexOutOfRangeException();
+                    }
+                }
+            }
+        }
+        
         public struct Edge
         {
             public Edge(Vector3 a, Vector3 b)
