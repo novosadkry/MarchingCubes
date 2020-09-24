@@ -50,14 +50,14 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\GridCell.cs" />
-     <Compile Include="Assets\Scripts\Grid.cs" />
+     <Compile Include="Assets\Scripts\Voxel\GridCell.cs" />
+     <Compile Include="Assets\Scripts\Voxel\Grid.cs" />
      <Compile Include="Assets\Scripts\TerraformTool.cs" />
-     <Compile Include="Assets\Scripts\GridGenerator.cs" />
-     <Compile Include="Assets\Scripts\Table.cs" />
-     <Compile Include="Assets\Scripts\FastNoise.cs" />
-     <Compile Include="Assets\Scripts\GameObjectPool.cs" />
-     <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
+     <Compile Include="Assets\Scripts\Voxel\GridGenerator.cs" />
+     <Compile Include="Assets\Scripts\Voxel\Table.cs" />
+     <Compile Include="Assets\Scripts\Utils\FastNoise.cs" />
+     <Compile Include="Assets\Scripts\Utils\GameObjectPool.cs" />
+     <Compile Include="Assets\Scripts\Utils\SimpleCameraController.cs" />
  <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
  <HintPath>H:/Unity/Projects/MarchingCubes/Library/ScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
  </Reference>

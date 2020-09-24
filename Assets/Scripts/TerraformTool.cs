@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Voxel;
 
 [RequireComponent(typeof(Camera))]
 public class TerraformTool : MonoBehaviour
@@ -71,7 +72,7 @@ public class TerraformTool : MonoBehaviour
                     ? TerraformMode.Add
                     : TerraformMode.Subtract;
 
-                Grid grid = gridGenerator.GetGridFromWorldPosition(toolPos);
+                Voxel.Grid grid = gridGenerator.GetGridFromWorldPosition(toolPos);
 
                 if (!ReferenceEquals(grid, null))
                     Terraform(grid, toolPos, toolScale / 2, toolStrength, terraformMode);
@@ -81,7 +82,7 @@ public class TerraformTool : MonoBehaviour
         }
     }
 
-    public void Terraform(Grid grid, Vector3 pos, float radius, float strength, TerraformMode mode)
+    public void Terraform(Voxel.Grid grid, Vector3 pos, float radius, float strength, TerraformMode mode)
     {
         ISet<Vector3Int> toRefresh = new HashSet<Vector3Int>();
         
@@ -131,7 +132,7 @@ public class TerraformTool : MonoBehaviour
             if (ignoreGrids.Contains(gridPos)) 
                 continue;
             
-            if (gridGenerator.Grids.TryGetValue(gridPos, out Grid refreshGrid))
+            if (gridGenerator.Grids.TryGetValue(gridPos, out Voxel.Grid refreshGrid))
                 Terraform(refreshGrid, pos, radius, strength, mode);
         }
         
