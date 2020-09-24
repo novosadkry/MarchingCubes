@@ -107,6 +107,8 @@ public class TerraformTool : MonoBehaviour
                             break;
                     }
 
+                    cell.Values[i] = Mathf.Min(1.5f, cell.Values[i]);
+                    
                     if (cellPos.x == 0)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(-1, 0, 0));
                     else if (cellPos.x == grid.Data.CellCount - 1)
