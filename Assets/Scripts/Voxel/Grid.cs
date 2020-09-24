@@ -142,7 +142,7 @@ namespace Voxel
 
                     vertices.Add(pPos);
                     triangles.Add(vertexCount++);
-                    colors.Add(Data.ColorGradient.Evaluate((pPos + GridPosition).y / Data.MaxHeight));
+                    colors.Add(Data.ColorGradient.Evaluate((pPos + (Vector3)GridPosition * GridScale).y / Data.MaxHeight));
                 }
 
                 foreach (int edgeIndex in tri.Reverse())
