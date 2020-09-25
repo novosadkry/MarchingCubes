@@ -359,6 +359,7 @@ MonoBehaviour:
   toolPrefab: {fileID: 1028430629344763022, guid: 8f5ba1c368756364e8d8021380383de0, type: 3}
   toolStrength: 0.2
   toolTick: 0.1
+  toolSmooth: 1
 --- !u!114 &963194231
 MonoBehaviour:
   m_ObjectHideFlags: 0

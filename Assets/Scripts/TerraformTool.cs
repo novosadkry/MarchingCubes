@@ -23,6 +23,7 @@ public class TerraformTool : MonoBehaviour
     private float toolScale;
     public float toolStrength;
     public float toolTick;
+    public bool toolSmooth;
 
     private float nextTick;
     
@@ -75,14 +76,14 @@ public class TerraformTool : MonoBehaviour
                 Voxel.Grid grid = gridGenerator.GetGridFromWorldPosition(toolPos);
 
                 if (!ReferenceEquals(grid, null))
-                    Terraform(grid, toolPos, toolScale / 2, toolStrength, terraformMode);
+                    Terraform(grid, toolPos, toolScale / 2, toolStrength, terraformMode, toolSmooth);
                 
                 ignoreGrids.Clear();
             }
         }
     }
 
-    public void Terraform(Voxel.Grid grid, Vector3 pos, float radius, float strength, TerraformMode mode)
+    public void Terraform(Voxel.Grid grid, Vector3 pos, float radius, float strength, TerraformMode mode, bool smooth = true)
     {
         ISet<Vector3Int> toRefresh = new HashSet<Vector3Int>();
         
@@ -97,17 +98,23 @@ public class TerraformTool : MonoBehaviour
 
                 if (distanceSqrt < radius * radius)
                 {
+                    float value = 0.0f;
+                    value += strength;
+                    
+                    if (smooth)
+                        value *= 1 - distanceSqrt / (radius * radius);
+                    
                     switch (mode)
                     {
                         case TerraformMode.Add:
-                            cell.Values[i] -= strength;
+                            cell.Values[i] -= value;
                             break;
                         case TerraformMode.Subtract:
-                            cell.Values[i] += strength;
+                            cell.Values[i] += value;
                             break;
                     }
 
-                    cell.Values[i] = Mathf.Min(1.5f, cell.Values[i]);
+                    cell.Values[i] = Mathf.Clamp(cell.Values[i], -1.5f, 1.5f);
                     
                     if (cellPos.x == 0)
                         toRefresh.Add(grid.GridPosition + new Vector3Int(-1, 0, 0));
@@ -135,7 +142,7 @@ public class TerraformTool : MonoBehaviour
                 continue;
             
             if (gridGenerator.Grids.TryGetValue(gridPos, out Voxel.Grid refreshGrid))
-                Terraform(refreshGrid, pos, radius, strength, mode);
+                Terraform(refreshGrid, pos, radius, strength, mode, smooth);
         }
         
         gridGenerator.RefreshGrid(grid.GridPosition);
